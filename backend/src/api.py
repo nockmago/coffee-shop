@@ -61,22 +61,26 @@ def get_drinks_detail():
 '''
 # POST drinks
 @app.route('/drinks', methods=['POST'])
-requires_auth('post:drinks')
-def create_drink(): 
-    body = request.get_json()
+@requires_auth('post:drinks')
+def create_drink(payload): 
+    try: 
+        body = request.get_json()
+
+        title = body.get('title', None)
+        recipe = body.get('recipe', None)
+
+        drink = Drink(title=title, recipe=json.dumps(recipe))
+
+        drink.insert()
+
+        return jsonify({
+            'success': True,
+            'drinks': drink.long()
+        })
     
-    id = body.get('id', None)
-    title = body.get('title', None)
-    recipe = body.get('recipe', None)
-
-    drink = Drink(id=id, title=title, recipe=recipe)
-
-    drink.insert()
-
-    return jsonify({
-        'success': True,
-        'drinks': [drink.long()]
-    })
+    except Exception as e: 
+        print(e)
+        abort(422)
 
 
 '''

@@ -107,6 +107,13 @@ def verify_decode_jwt(token):
                 'description': 'Unable to find the appropriate key.'
             }, 400)
 
+def check_permissions(permission, payload): 
+    if 'permissions' not in payload: 
+        abort(400)
+    if permission not in payload['permissions']: 
+        abort(403)
+    return True
+
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
